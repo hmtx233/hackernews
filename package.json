@@ -1,0 +1,27 @@
+{
+  "name": "hackernews",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "@nuxt/ui": "^2.15.1",
+    "@nuxtjs/color-mode": "^3.3.3",
+    "@nuxtjs/i18n": "^8.3.0",
+    "@nuxtjs/tailwindcss": "^6.11.4",
+    "cheerio": "1.0.0-rc.12",
+    "html-to-image": "^1.11.11",
+    "nuxt": "^3.11.1",
+    "nuxt-cloudflare-analytics": "^1.0.8",
+    "nuxt-gtag": "^2.0.5",
+    "tencentcloud-sdk-nodejs-tmt": "^4.0.810",
+    "vue": "^3.4.21",
+    "vue-router": "^4.3.0",
+    "wrangler": "^3.52.0"
+  }
+}

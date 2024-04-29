@@ -1,0 +1,50 @@
+export default defineI18nConfig(() => ({
+  legacy: false,
+  messages: {
+    // 简体中文
+    zh: {
+      share: '分享',
+      comments: '评论',
+      points: '分',
+      prev: '上一页',
+      next: '下一页',
+      reply: '回复',
+      loadMore: '更多',
+      id: '用户名',
+      created: '创建于',
+      karma: 'HN值',
+      about: '关于',
+      submitted: '提交',
+      back: '返回',
+      new: '最新',
+      top: '榜单',
+      best: '最热',
+      ask: '问答',
+      show: '展示',
+      job: '招聘',
+    },
+
+    // 英文
+    en: {
+      share: 'share',
+      comments: 'comments',
+      points: 'points',
+      prev: 'Prev',
+      next: 'Next',
+      reply: 'Reply',
+      loadMore: 'More',
+      id: 'Id',
+      created: 'Created',
+      karma: 'Karma',
+      about: 'About',
+      submitted: 'Submitted',
+      back: 'Back',
+      new: 'New',
+      top: 'Top',
+      best: 'Best',
+      ask: 'Ask',
+      show: 'Show',
+      job: 'Job',
+    },
+  }
+}))
