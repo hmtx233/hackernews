@@ -75,7 +75,7 @@ const txTranslateTxt = async (txt: string, index: number) => {
         Target: "zh",
         ProjectId: 0
       };
-      const res: any = await $fetch("/api/tx-translate", {
+      const res: any = await useFetch("/api/tx-translate", {
         method: "POST",
         body: params
       });
