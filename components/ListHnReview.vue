@@ -100,10 +100,10 @@ const moreReview = async (kids: any, parentBy: string, parentNo: string) => {
               </span>
             </ULink>
           </div>
-          <div class="flex gap-1">
+          <!-- <div class="flex gap-1">
             <UIcon @click="() => txTranslateTxt(i.text, index)" name="i-heroicons-language"
               class=" dark:bg-gray-400 bg-gray-500" />
-          </div>
+          </div> -->
         </div>
       </div>
     </div>

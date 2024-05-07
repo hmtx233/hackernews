@@ -75,7 +75,7 @@ const txTranslateTxt = async (txt: string, index: number) => {
         Target: "zh",
         ProjectId: 0
       };
-      const res: any = await useFetch("/api/tx-translate", {
+      const res: any = await $fetch("/api/tx-translate", {
         method: "POST",
         body: params
       });
@@ -86,23 +86,23 @@ const txTranslateTxt = async (txt: string, index: number) => {
     }
   }
 }
- 
+
 </script>
 <template>
-  <div class="data text-sm">
+  <div class="data">
     <div v-for="(i, index) in data" class="my-4 w-full" :id="`cut-img-${i.id}`">
       <div class="p-3 rounded-md dark:bg-black bg-gray-100 my-4 items-center">
         <div class="flex-1">
-          <div class="m-2 3xs:block md:hidden">
-            <NuxtLink class="text-xs underline" :to="`/${lang}/user?id=${i.by}`">
+          <div class="m-2 3xs:block md:hidden ">
+            <NuxtLink class=" underline" :to="`/${lang}/user?id=${i.by}`">
               {{ '@' + i.by }}
             </NuxtLink>
-            <span class="pl-2 text-xs">
+            <span class="pl-2 ">
               {{ i.time }}
             </span>
             <UButton class="h-6 inline-block float-right" color="primary" size="2xs" @click="shareImg(i.id)">{{
               $t('share')
-            }}</UButton>
+              }}</UButton>
           </div>
           <UButton class="h-6  3xs:hidden md:inline-block  float-right" color="primary" size="2xs"
             @click="shareImg(i.id)">{{
@@ -123,23 +123,23 @@ const txTranslateTxt = async (txt: string, index: number) => {
           <div class="flex m-2 items-center">
             <div class="flex gap-2">
               <div class="gap-0.5 3xs:hidden md:flex dark:hover:text-primary hover:text-primary">
-                <NuxtLink class="text-xs underline" :to="`/${lang}/user?id=${i.by}`">
+                <NuxtLink class="underline" :to="`/${lang}/user?id=${i.by}`">
                   {{ '@' + i.by }}
                 </NuxtLink>
               </div>
 
               <div class="gap-0.5 3xs:hidden md:flex">
-                <span class="text-xs">
+                <span class="">
                   {{ i.time }}
                 </span>
               </div>
 
               <div class="flex gap-0.5">
-                <ULink class="text-xs">{{ i.score + ' ' + $t('points') }}</ULink>
+                <ULink class="">{{ i.score + ' ' + $t('points') }}</ULink>
               </div>
 
               <div class="flex gap-0.5" v-if="i.kids != null" @click="() => openReview(i.kids, i.by, i.indexNo)">
-                <ULink class="underline text-xs dark:hover:text-primary hover:text-primary">
+                <ULink class="underline  dark:hover:text-primary hover:text-primary">
                   {{ i.descendants + ' ' + $t('comments') }}
                   <span v-if="isOpenReview && i.id == reviewData['0'].parent">
                     {{ '[-]' }}
@@ -149,15 +149,14 @@ const txTranslateTxt = async (txt: string, index: number) => {
                   </span>
                 </ULink>
               </div>
-              <div class="flex remove-me">
+              <!-- <div class="flex remove-me">
                 <UIcon @click="() => txTranslateTxt(i.title, index)" name="i-heroicons-language" class="mt-0.5" />
-              </div>
+              </div> -->
             </div>
           </div>
           <div class="w-full review">
             <ListHnReview v-if="isOpenReview && i.id == reviewData['0'].parent" :data="reviewData" />
-            <UButton
-            color="primary" 
+            <UButton color="primary"
               v-if="i.kids != null && isOpenReview && i.id == reviewData['0'].parent && i.kids.length != reviewData.length"
               @click="() => { page++, moreReview(i.kids, i.by, i.indexNo.split('#')[1]) }" class="flex mt-2 h-6 "
               size="2xs">
