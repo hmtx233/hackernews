@@ -17,6 +17,9 @@ dependencies:
   '@nuxtjs/tailwindcss':
     specifier: ^6.11.4
     version: 6.11.4(rollup@4.13.2)
+  '@vueuse/core':
+    specifier: ^10.9.0
+    version: 10.9.0(vue@3.4.21)
   cheerio:
     specifier: 1.0.0-rc.12
     version: 1.0.0-rc.12

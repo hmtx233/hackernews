@@ -27,9 +27,13 @@ console.log(data.value)
   <div class="mb-4">
     <div> {{ $t('submitted') + ':  ' + data.submitted.length }}</div>
   </div>
-  <NuxtLink class="text-xs underline dark:hover:text-primary hover:text-primary" :to="`/${lang}`" >
+  <!-- <NuxtLink class="text-xs underline dark:hover:text-primary hover:text-primary" :to="`/${lang}`" >
     {{ $t('back') }}
-  </NuxtLink>
+  </NuxtLink> -->
+
+  <UButton class="text-xs underline dark:hover:text-primary hover:text-primary" :to="`/${lang}`" >
+    {{ $t('back') }}
+  </UButton>
 </div>
 </template>
 

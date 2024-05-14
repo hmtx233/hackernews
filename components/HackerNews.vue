@@ -66,7 +66,7 @@ const moreReview = async (kids: any, parentBy: string, parentNo: string) => {
 
 
 // 腾讯 翻译
-const txTranslateTxt = async (txt: string, index: number) => {
+const txTranslateTxt = async (txt: string, index: any) => {
   if (data?.value != undefined) {
     if (!data.value[index].translated) {
       const params = {
@@ -75,7 +75,7 @@ const txTranslateTxt = async (txt: string, index: number) => {
         Target: "zh",
         ProjectId: 0
       };
-      const res: any = await useFetch("/api/tx-translate", {
+      const res: any = await $fetch("/api/tx-translate", {
         method: "POST",
         body: params
       });
@@ -86,6 +86,23 @@ const txTranslateTxt = async (txt: string, index: number) => {
     }
   }
 }
+
+const shakeFlag = ref(false);
+
+onMounted(() => {
+  shakeFn();
+})
+
+const shakeFn = () => {
+  setTimeout(() => {
+    shakeFlag.value = true;
+  }, 1000)
+  shakeFlag.value = false;
+}
+
+watch(data, () => {
+  shakeFn();
+})
  
 </script>
 <template>
@@ -100,12 +117,13 @@ const txTranslateTxt = async (txt: string, index: number) => {
             <span class="pl-2 text-xs">
               {{ i.time }}
             </span>
-            <UButton class="h-6 inline-block float-right" color="primary" size="2xs" @click="shareImg(i.id)">{{
-              $t('share')
-            }}</UButton>
+            <UButton class="h-6 inline-block float-right " :class="{ 'shake-bottom': shakeFlag }" color="primary"
+              size="2xs" @click="shareImg(i.id)">{{
+                $t('share')
+              }}</UButton>
           </div>
-          <UButton class="h-6  3xs:hidden md:inline-block  float-right" color="primary" size="2xs"
-            @click="shareImg(i.id)">{{
+          <UButton class="h-6 3xs:hidden md:inline-block float-right " :class="{ 'shake-bottom': shakeFlag }"
+            color="primary" size="2xs" @click="shareImg(i.id)">{{
               $t('share')
             }}</UButton>
           <h6 class="pl-2 dark:hover:text-primary hover:text-primary">
@@ -156,11 +174,10 @@ const txTranslateTxt = async (txt: string, index: number) => {
           </div>
           <div class="w-full review">
             <ListHnReview v-if="isOpenReview && i.id == reviewData['0'].parent" :data="reviewData" />
-            <UButton
-            color="primary" 
+            <UButton color="primary" ref="targetEle"
               v-if="i.kids != null && isOpenReview && i.id == reviewData['0'].parent && i.kids.length != reviewData.length"
               @click="() => { page++, moreReview(i.kids, i.by, i.indexNo.split('#')[1]) }" class="flex mt-2 h-6 "
-              size="2xs">
+              :class="{ 'shake-bottom': shakeFlag }" size="xs">
               {{ $t('loadMore') }}</UButton>
           </div>
         </div>
@@ -168,3 +185,90 @@ const txTranslateTxt = async (txt: string, index: number) => {
     </div>
   </div>
 </template>
+
+<style>
+.shake-bottom {
+  -webkit-animation: shake-bottom 0.8s cubic-bezier(0.455, 0.030, 0.515, 0.955) both;
+  animation: shake-bottom 0.8s cubic-bezier(0.455, 0.030, 0.515, 0.955) both;
+}
+
+@-webkit-keyframes shake-bottom {
+
+  0%,
+  100% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+    -webkit-transform-origin: 50% 100%;
+    transform-origin: 50% 100%
+  }
+
+  10% {
+    -webkit-transform: rotate(2deg);
+    transform: rotate(2deg)
+  }
+
+  20%,
+  40%,
+  60% {
+    -webkit-transform: rotate(-4deg);
+    transform: rotate(-4deg)
+  }
+
+  30%,
+  50%,
+  70% {
+    -webkit-transform: rotate(4deg);
+    transform: rotate(4deg)
+  }
+
+  80% {
+    -webkit-transform: rotate(-2deg);
+    transform: rotate(-2deg)
+  }
+
+  90% {
+    -webkit-transform: rotate(2deg);
+    transform: rotate(2deg)
+  }
+}
+
+@keyframes shake-bottom {
+
+  0%,
+  100% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+    -webkit-transform-origin: 50% 100%;
+    transform-origin: 50% 100%
+  }
+
+  10% {
+    -webkit-transform: rotate(2deg);
+    transform: rotate(2deg)
+  }
+
+  20%,
+  40%,
+  60% {
+    -webkit-transform: rotate(-4deg);
+    transform: rotate(-4deg)
+  }
+
+  30%,
+  50%,
+  70% {
+    -webkit-transform: rotate(4deg);
+    transform: rotate(4deg)
+  }
+
+  80% {
+    -webkit-transform: rotate(-2deg);
+    transform: rotate(-2deg)
+  }
+
+  90% {
+    -webkit-transform: rotate(2deg);
+    transform: rotate(2deg)
+  }
+}
+</style>

@@ -26,8 +26,8 @@ export default defineNuxtConfig({
           'xl': '1280px',
           '2xl': '1536px',
         }
-      }
-    }
+      },
+    },
   },
   gtag: {
     id: 'G-R60WDDBRWE',
