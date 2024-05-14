@@ -86,6 +86,23 @@ const txTranslateTxt = async (txt: string, index: any) => {
     }
   }
 }
+
+const shakeFlag = ref(false);
+
+onMounted(() => {
+  shakeFn();
+})
+
+const shakeFn = () => {
+  setTimeout(() => {
+    shakeFlag.value = true;
+  }, 1000)
+  shakeFlag.value = false;
+}
+
+watch(data, () => {
+  shakeFn();
+})
  
 </script>
 <template>
@@ -100,9 +117,10 @@ const txTranslateTxt = async (txt: string, index: any) => {
             <span class="pl-2 ">
               {{ i.time }}
             </span>
-            <UButton class="h-6 inline-block float-right" color="primary" size="2xs" @click="shareImg(i.id)">{{
-              $t('share')
-            }}</UButton>
+            <UButton class="h-6 inline-block float-right " :class="{ 'shake-bottom': shakeFlag }" color="primary"
+              size="2xs" @click="shareImg(i.id)">{{
+                $t('share')
+              }}</UButton>
           </div>
           <UButton class="h-6 3xs:hidden md:inline-block float-right " :class="{ 'shake-bottom': shakeFlag }"
             color="primary" size="2xs" @click="shareImg(i.id)">{{
@@ -156,8 +174,7 @@ const txTranslateTxt = async (txt: string, index: any) => {
           </div>
           <div class="w-full review">
             <ListHnReview v-if="isOpenReview && i.id == reviewData['0'].parent" :data="reviewData" />
-            <UButton
-            color="primary" 
+            <UButton color="primary"
               v-if="i.kids != null && isOpenReview && i.id == reviewData['0'].parent && i.kids.length != reviewData.length"
               @click="() => { page++, moreReview(i.kids, i.by, i.indexNo.split('#')[1]) }" class="flex mt-2 h-6 "
               :class="{ 'shake-bottom': shakeFlag }" size="xs">
