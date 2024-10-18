@@ -26,6 +26,7 @@ const shareImg = (id: any) => {
     }
   }
 }
+
 const props = defineProps({
   data: Object,
 });
@@ -167,9 +168,9 @@ watch(data, () => {
                   </span>
                 </ULink>
               </div>
-              <!-- <div class="flex remove-me">
+              <div class="flex remove-me">
                 <UIcon @click="() => txTranslateTxt(i.title, index)" name="i-heroicons-language" class="mt-0.5" />
-              </div> -->
+              </div>
             </div>
           </div>
           <div class="w-full review">
