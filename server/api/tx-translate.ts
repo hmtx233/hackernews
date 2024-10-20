@@ -3,7 +3,7 @@ import { configureSWRHeaders } from "../utils/swr";
 export default defineEventHandler(async (event) => {
   configureSWRHeaders(event)
   const params = await readBody(event);
-  console.log(params);
+  // console.log(params);
   // 调用接口
   return await getData(params);
 })

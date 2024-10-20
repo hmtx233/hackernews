@@ -9,10 +9,25 @@ const filter = (node: HTMLElement) => {
   return !exclusionClasses.some((classname) => node.classList?.contains(classname));
 }
 
-// 截图
-const shareImg = (id: any) => {
+const cardContext = ref();
+const isOpen = ref(false);
+const modelId = ref('');
+
+const openModel = (id: string) => {
   if (process.client) {
+    modelId.value = id;
     const node = document.getElementById('cut-img-' + id);
+    cardContext.value = node;
+    console.log(node);
+    isOpen.value = true;
+  }
+
+}
+// 截图
+const shareImg = () => {
+  isOpen.value = false;
+  if (process.client) {
+    const node = document.getElementById('cut-img');
     if (node != null) {
       htmlToImage.toJpeg(node, { quality: 0.95, filter: filter })
         .then(function (dataUrl) {
@@ -54,7 +69,7 @@ const openReview = async (kids: any, parentBy: string, parentNo: string) => {
   }
 }
 
-
+// 更多评论
 const moreReview = async (kids: any, parentBy: string, parentNo: string) => {
   const res = await $fetch("/api/hacker-news-review", {
     method: "POST",
@@ -88,6 +103,7 @@ const txTranslateTxt = async (txt: string, index: any) => {
   }
 }
 
+// 抖动动画
 const shakeFlag = ref(false);
 
 onMounted(() => {
@@ -104,12 +120,12 @@ const shakeFn = () => {
 watch(data, () => {
   shakeFn();
 })
- 
+
 </script>
 <template>
   <div class="data">
     <div v-for="(i, index) in data" class="my-4 w-full" :id="`cut-img-${i.id}`">
-      <div class="p-3 rounded-md dark:bg-black bg-gray-100 my-4 items-center">
+      <div class="p-3 rounded-md dark:bg-black bg-gray-100 items-center">
         <div class="flex-1">
           <div class="m-2 3xs:block md:hidden ">
             <NuxtLink class=" underline" :to="`/${lang}/user?id=${i.by}`">
@@ -118,13 +134,13 @@ watch(data, () => {
             <span class="pl-2 ">
               {{ i.time }}
             </span>
-            <UButton class="h-6 inline-block float-right " :class="{ 'shake-bottom': shakeFlag }" color="primary"
-              size="2xs" @click="shareImg(i.id)">{{
+            <UButton class="h-6 inline-block float-right  remove-me" :class="{ 'shake-bottom': shakeFlag }"
+              color="primary" size="2xs" @click="openModel(i.id)">{{
                 $t('share')
               }}</UButton>
           </div>
-          <UButton class="h-6 3xs:hidden md:inline-block float-right " :class="{ 'shake-bottom': shakeFlag }"
-            color="primary" size="2xs" @click="shareImg(i.id)">{{
+          <UButton class="h-6 3xs:hidden md:inline-block float-right remove-me " :class="{ 'shake-bottom': shakeFlag }"
+            color="primary" size="2xs" @click="openModel(i.id)">{{
               $t('share')
             }}</UButton>
           <h6 class="pl-2 dark:hover:text-primary hover:text-primary">
@@ -177,13 +193,43 @@ watch(data, () => {
             <ListHnReview v-if="isOpenReview && i.id == reviewData['0'].parent" :data="reviewData" />
             <UButton color="primary"
               v-if="i.kids != null && isOpenReview && i.id == reviewData['0'].parent && i.kids.length != reviewData.length"
-              @click="() => { page++, moreReview(i.kids, i.by, i.indexNo.split('#')[1]) }" class="flex mt-2 h-6 "
-              :class="{ 'shake-bottom': shakeFlag }" size="xs">
+              @click="() => { page++, moreReview(i.kids, i.by, i.indexNo.split('#')[1]) }"
+              class="flex mt-2 h-6  remove-me" :class="{ 'shake-bottom': shakeFlag }" size="xs">
               {{ $t('loadMore') }}</UButton>
           </div>
         </div>
       </div>
     </div>
+
+    <UModal v-model="isOpen" :overlay="true" :transition="false">
+      <UCard :ui="{ ring: '', divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
+        <template #header>
+          <div class="flex items-center justify-between">
+            <h3 class="text-base font-semibold leading-6 text-gray-800 dark:text-white">
+              截图分享
+            </h3>
+            <UButton color="gray" variant="ghost" icon="i-heroicons-x-mark-20-solid" class="-my-1"
+              @click="isOpen = false" />
+          </div>
+        </template>
+        <div class="rounded-lg shadow-sm   bg-primary-400  p-2" id="cut-img">
+          <h4 class="font-serif dark:text-gray-500 text-gray-400 mb-1">hackernews 新闻</h4>
+          <div class="font-medium text-sm mb-1" v-html="cardContext.innerHTML">
+          </div>
+          <div class="text-xs dark:text-gray-500 text-gray-400 mb-1">
+            <span class="font-serif text-right">截图来自: https://hackernews.site
+              {{ timestampToDateTime(new Date().getTime() / 1000) }}
+            </span>
+          </div>
+        </div>
+        <template #footer>
+          <div class="flex items-center justify-between">
+            <UButton color="gray" variant="ghost" class="-my-1" @click="isOpen = false">取消</UButton>
+            <UButton color="gray" variant="ghost" class="-my-1" @click="shareImg">确认</UButton>
+          </div>
+        </template>
+      </UCard>
+    </UModal>
   </div>
 </template>
 
