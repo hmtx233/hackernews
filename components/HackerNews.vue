@@ -212,8 +212,8 @@ watch(data, () => {
               @click="isOpen = false" />
           </div>
         </template>
-        <div class="rounded-lg shadow-sm   bg-primary-400  p-2" id="cut-img">
-          <h4 class="font-serif dark:text-gray-500 text-gray-400 mb-1">hackernews 新闻</h4>
+        <div class="rounded-lg shadow-sm border border-primary-400  p-2" id="cut-img">
+          <h4 class="font-serif dark:text-gray-500  mb-1">hackernews 新闻</h4>
           <div class="font-medium text-sm mb-1" v-html="cardContext.innerHTML">
           </div>
           <div class="text-xs dark:text-gray-500 text-gray-400 mb-1">
