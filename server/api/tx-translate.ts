@@ -1,51 +1,46 @@
-import { configureSWRHeaders } from "../utils/swr";
-
-export default defineEventHandler(async (event) => {
-  configureSWRHeaders(event)
-  const params = await readBody(event);
-  console.log(params);
-  console.log(process.env.TX_SECRET_KEY);
-  // 调用接口
-  return await getData(params);
-})
-
-// Depends on tencentcloud-sdk-nodejs version 4.0.3 or higher
+import {configureSWRHeaders} from "../utils/swr";
 import tencentcloud from "tencentcloud-sdk-nodejs-tmt";
 
 const TmtClient = tencentcloud.tmt.v20180321.Client;
 
-// 实例化一个认证对象，入参需要传入腾讯云账户 SecretId 和 SecretKey，此处还需注意密钥对的保密
-// 代码泄露可能会导致 SecretId 和 SecretKey 泄露，并威胁账号下所有资源的安全性。以下代码示例仅供参考，建议采用更安全的方式来使用密钥，请参见：https://cloud.tencent.com/document/product/1278/85305
-// 密钥可前往官网控制台 https://console.cloud.tencent.com/cam/capi 进行获取
+// 配置客户端
 const clientConfig = {
-  credential: {
-    secretId: process.env.TX_SECRET_ID,
-    secretKey: process.env.TX_SECRET_KEY,
-  },
-  region: "ap-beijing",
-  profile: {
-    httpProfile: {
-      endpoint: "tmt.tencentcloudapi.com",
+    credential: {
+        secretId: '',
+        secretKey: '',
     },
-  },
+    region: "ap-beijing",
+    profile: {
+        httpProfile: {
+            endpoint: "tmt.tencentcloudapi.com",
+        },
+    },
 };
 
-// 实例化要请求产品的client对象,clientProfile是可选的
-const client = new TmtClient(clientConfig);
-
-const getData = async (params: any) => {
-  return client.TextTranslate(params).then(
-    (data: any) => {
-      console.log(data)
-      return data;
-    },
-    (err: any) => {
-      console.error("error", err);
-      throw err; // 抛出错误，让调用者能够捕获到错误
-    }
-  );
-}
+// 定义事件处理器
+defineEventHandler(async (event) => {
+    configureSWRHeaders(event);
+    const params = await readBody(event);
+    // 从环境变量中读取密钥并直接赋值给对应的属性
+    clientConfig.credential.secretId = process.env.TX_SECRET_ID || event.context.cloudflare.env.TX_SECRET_ID;
+    clientConfig.credential.secretKey = process.env.TX_SECRET_KEY || event.context.cloudflare.env.TX_SECRET_KEY;
+    // 调用接口
+    return await getData(params, clientConfig);
+});
 
 
-
-
+// 获取数据
+const getData = async (params: any, clientConfig: any) => {
+    // 使用 clientConfig 创建 TmtClient 实例
+    const client = new TmtClient(clientConfig);
+    return client.TextTranslate(params).then(
+        (data) => {
+            console.log(data);
+            return data;
+        },
+        (err) => {
+            console.error("error", err);
+            throw err; // 抛出错误，让调用者能够捕获到错误
+        }
+    );
+};
