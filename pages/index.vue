@@ -37,7 +37,6 @@ const onChange = (index: number) => {
   params.value.order = `${item.label}stories`
   execute()
 }
- 
 </script>
 
 <template>
