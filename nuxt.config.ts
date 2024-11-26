@@ -1,14 +1,14 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-    //SSR渲染。 若设置为false, 则表示单页开发
+    // SSR渲染。 若设置为false, 则表示单页开发
     ssr: true,
-
+    // 开启devtool
     devtools: {enabled: true},
-
+    // 自定义端口
     devServer: {
         port: 4002
     },
-
+    // 加载模块
     modules: [
         '@nuxt/ui',
         '@nuxtjs/color-mode',
@@ -16,7 +16,7 @@ export default defineNuxtConfig({
         'nuxt-gtag',
         '@nuxtjs/i18n'
     ],
-
+    // 自定义css
     tailwindcss: {
         config: {
             theme: {
@@ -34,12 +34,14 @@ export default defineNuxtConfig({
         },
     },
 
+    // gtag 统计
     gtag: {
         id: 'G-R60WDDBRWE',
     },
 
+    // i18n配置
     i18n: {
-        // defaultLocale: 'en',
+        defaultLocale: 'en',
         vueI18n: './i18n.config.ts',
         locales: [
             {
@@ -53,6 +55,7 @@ export default defineNuxtConfig({
         ]
     },
 
+    // 客户端配置
     app: {
         head: {
             script: [
@@ -65,11 +68,11 @@ export default defineNuxtConfig({
         }
     },
 
+    // 运行时配置
     runtimeConfig: {
-        txSecretId: "",
-        txSecretKey: "",
-        public: {
-        },
+        txSecretId: process.env.NUXT_TX_SECRET_ID || "",
+        txSecretKey: process.env.NUXT_TX_SECRET_KEY || "",
+        public: {},
     },
 
     compatibilityDate: '2024-11-25',
