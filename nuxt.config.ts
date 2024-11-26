@@ -72,6 +72,10 @@ export default defineNuxtConfig({
     runtimeConfig: {
         txSecretId: process.env.NUXT_TX_SECRET_ID || "",
         txSecretKey: process.env.NUXT_TX_SECRET_KEY || "",
+        translateToken: process.env.NUXT_TRANSLATE_TOKEN || "",
+        apiUrl: process.env.NUXT_API_URL || "",
+        deepSeekApi: process.env.NUXT_DEEP_SEEK_API || "",
+        deepSeekToken: process.env.NUXT_DEEP_SEEK_TOKEN || "",
         public: {},
     },
 

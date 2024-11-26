@@ -19,6 +19,7 @@ const getData = async (params: any) => {
     const itemStory: any = await $fetch('https://hacker-news.firebaseio.com/v0/item/' + item + '.json?print=pretty');
     itemStory.time = (lang === 'en' ? timestampToEnglishTime(itemStory.time * 1000) : timestampToChineseTime(itemStory.time * 1000));
     itemStory.translated = false;
+    itemStory.summary = '';
     itemStory.titleZh = '';
     itemStory.indexNo = '#'+(pageSize * (pageNo-1) + indexNo+1);
     return itemStory;

@@ -9,30 +9,27 @@ const props = defineProps({
   },
 });
 
-
 const {data} = toRefs(props);
 
-// 腾讯 翻译
-const txTranslateTxt = async (txt: string, index: number) => {
+// deepseek model 翻译
+const dsTranslateTxt = async (txt: string, index: any) => {
   if (data?.value != undefined) {
     if (!data.value[index].translated) {
       const params = {
-        SourceText: txt,
-        Source: "en",
-        Target: "zh",
-        ProjectId: 0
+        text: txt,
       };
-      const res: any = await useFetch("/api/tx-translate", {
+      const res: any = await $fetch("/api/deepseek-translate", {
         method: "POST",
         body: params
       });
       data.value[index].translated = !data.value[index].translated;
-      data.value[index].titleZh = res.data.value.TargetText;
+      data.value[index].titleZh =  res;
     } else {
       data.value[index].translated = false;
     }
   }
 }
+
 
 const isOpenReview = ref(false);
 const reviewData: Ref<any[]> = ref([]);
@@ -99,7 +96,7 @@ const moreReview = async (kids: any, parentBy: string, parentNo: string) => {
             </ULink>
           </div>
           <div class="flex gap-1">
-            <UIcon @click="() => txTranslateTxt(i.text, index)" name="i-heroicons-language"
+            <UIcon @click="() => dsTranslateTxt(i.text, index)" name="i-heroicons-language"
                    class=" dark:bg-gray-400 bg-gray-500"/>
           </div>
         </div>

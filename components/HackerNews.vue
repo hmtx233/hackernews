@@ -79,25 +79,37 @@ const moreReview = async (kids: any, parentBy: string, parentNo: string) => {
   reviewData.value = reviewData.value.concat(res);
 }
 
-
-// 腾讯 翻译
-const txTranslateTxt = async (txt: string, index: any) => {
+// deepseek model 翻译
+const dsTranslateTxt = async (txt: string, index: any) => {
   if (data?.value != undefined) {
     if (!data.value[index].translated) {
       const params = {
-        SourceText: txt,
-        Source: "en",
-        Target: "zh",
-        ProjectId: 0
+        text: txt,
       };
-      const res: any = await $fetch("/api/tx-translate", {
+      const res: any = await $fetch("/api/deepseek-translate", {
         method: "POST",
         body: params
       });
       data.value[index].translated = !data.value[index].translated;
-      data.value[index].titleZh = res.TargetText;
+      data.value[index].titleZh = res;
     } else {
       data.value[index].translated = false;
+    }
+  }
+}
+
+// deepseek model 摘要
+const dsSummaryUrl = async (txt: string, index: any) => {
+  if (data?.value != undefined) {
+    if (!data.value[index].summary) {
+      const params = {
+        text: txt,
+      };
+      const res: any = await $fetch("/api/deepseek-summary", {
+        method: "POST",
+        body: params
+      });
+      data.value[index].summary = res;
     }
   }
 }
@@ -142,7 +154,7 @@ watch(data, () => {
             color="primary" size="2xs" @click="openModel(i.id)">{{
               $t('share')
             }}</UButton>
-          <h6 class="pl-2 dark:hover:text-primary hover:text-primary">
+          <h5 class="pl-2 dark:hover:text-primary hover:text-primary">
             <ULink :to="i.url" target="_blank" v-if="i.translated" class="text-left underline">
               <span class="text-primary text-lg">{{ (i.indexNo) }}</span>
               {{ i.titleZh }}
@@ -153,7 +165,8 @@ watch(data, () => {
               {{ i.title }}
               <span v-if="i.url">{{ '(' + i.url.split('/')[2] + ')' }}</span>
             </ULink>
-          </h6>
+          </h5>
+          <h6 class="pl-2">{{ i.summary }}</h6>
           <div class="flex m-2 items-center">
             <div class="flex gap-2">
               <div class="gap-0.5 3xs:hidden md:flex dark:hover:text-primary hover:text-primary">
@@ -184,8 +197,11 @@ watch(data, () => {
                 </ULink>
               </div>
               <div class="flex remove-me">
-                <UIcon @click="() => txTranslateTxt(i.title, index)" name="i-heroicons-language" class="mt-0.5" />
+                <UIcon @click="() => dsTranslateTxt(i.title, index)" name="i-heroicons-language" class="mt-0.5" />
               </div>
+<!--              <div class="flex remove-me">-->
+<!--                <UIcon @click="() => dsSummaryUrl(i.url, index)" name="i-heroicons-square-3-stack-3d" class="mt-0.5" />-->
+<!--              </div>-->
             </div>
           </div>
           <div class="w-full review">
