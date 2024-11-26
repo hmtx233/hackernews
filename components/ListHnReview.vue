@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { locale } = useI18n()
+const {locale} = useI18n()
 const lang = locale.value;
 
 const props = defineProps({
@@ -10,9 +10,7 @@ const props = defineProps({
 });
 
 
-const { data } = toRefs(props);
-
-
+const {data} = toRefs(props);
 
 // 腾讯 翻译
 const txTranslateTxt = async (txt: string, index: number) => {
@@ -29,7 +27,7 @@ const txTranslateTxt = async (txt: string, index: number) => {
         body: params
       });
       data.value[index].translated = !data.value[index].translated;
-      data.value[index].titleZh = res.TargetText
+      data.value[index].titleZh = res.data.value.TargetText;
     } else {
       data.value[index].translated = false;
     }
@@ -45,7 +43,7 @@ const openReview = async (kids: any, parentBy: string, parentNo: string) => {
   if (!isOpenReview.value) {
     const res = await $fetch("/api/hacker-news-review", {
       method: "POST",
-      body: { kids: kids, parentBy: parentBy, lang: locale.value, page: page.value, parentNo: parentNo }
+      body: {kids: kids, parentBy: parentBy, lang: locale.value, page: page.value, parentNo: parentNo}
     });
     isOpenReview.value = true;
     reviewData.value = reviewData.value.concat(res);
@@ -59,7 +57,7 @@ const openReview = async (kids: any, parentBy: string, parentNo: string) => {
 const moreReview = async (kids: any, parentBy: string, parentNo: string) => {
   const res = await $fetch("/api/hacker-news-review", {
     method: "POST",
-    body: { kids: kids, parentBy: parentBy, lang: locale.value, page: page.value, parentNo: parentNo }
+    body: {kids: kids, parentBy: parentBy, lang: locale.value, page: page.value, parentNo: parentNo}
   });
   isOpenReview.value = true;
   reviewData.value = reviewData.value.concat(res);
@@ -100,18 +98,19 @@ const moreReview = async (kids: any, parentBy: string, parentNo: string) => {
               </span>
             </ULink>
           </div>
-          <!-- <div class="flex gap-1">
+          <div class="flex gap-1">
             <UIcon @click="() => txTranslateTxt(i.text, index)" name="i-heroicons-language"
-              class=" dark:bg-gray-400 bg-gray-500" />
-          </div> -->
+                   class=" dark:bg-gray-400 bg-gray-500"/>
+          </div>
         </div>
       </div>
     </div>
-    <ListHnReview v-if="isOpenReview && i.id == reviewData[0].parent" :data="reviewData" />
+    <ListHnReview v-if="isOpenReview && i.id == reviewData[0].parent" :data="reviewData"/>
     <UButton
-      v-if="i.kids != null && isOpenReview && i.id == reviewData['0'].parent && i.kids.length != reviewData.length"
-      @click="() => { page++, moreReview(i.kids, i.by, i.indexNo) }" class="flex mt-2 h-6 " size="2xs">
-      {{ $t('loadMore') }}</UButton>
+        v-if="i.kids != null && isOpenReview && i.id == reviewData['0'].parent && i.kids.length != reviewData.length"
+        @click="() => { page++, moreReview(i.kids, i.by, i.indexNo) }" class="flex mt-2 h-6 " size="2xs">
+      {{ $t('loadMore') }}
+    </UButton>
   </div>
 </template>
 

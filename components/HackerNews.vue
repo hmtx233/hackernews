@@ -80,7 +80,6 @@ const moreReview = async (kids: any, parentBy: string, parentNo: string) => {
 }
 
 
-
 // 腾讯 翻译
 const txTranslateTxt = async (txt: string, index: any) => {
   if (data?.value != undefined) {
@@ -96,7 +95,7 @@ const txTranslateTxt = async (txt: string, index: any) => {
         body: params
       });
       data.value[index].translated = !data.value[index].translated;
-      data.value[index].titleZh = res.TargetText
+      data.value[index].titleZh = res.TargetText;
     } else {
       data.value[index].translated = false;
     }
