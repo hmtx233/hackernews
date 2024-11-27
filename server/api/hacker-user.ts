@@ -13,9 +13,9 @@ const getData = async (params: any) => {
   const id = params.id;
   const lang = params.lang;
   const data: any = await $fetch('https://hacker-news.firebaseio.com/v0/user/' + id + '.json?print=pretty');
+  console.log(data);
   data.created = (lang === 'en' ? timestampToEnglishTime(data.created * 1000) : timestampToChineseTime(data.created * 1000));
   // params.kids=data.submitted;
-  // console.log(params);
   // data.submitted = getSubmittedData(params)
   return data;
 }

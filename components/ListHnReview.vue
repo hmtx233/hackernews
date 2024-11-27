@@ -23,7 +23,7 @@ const dsTranslateTxt = async (txt: string, index: any) => {
         body: params
       });
       data.value[index].translated = !data.value[index].translated;
-      data.value[index].titleZh =  res;
+      data.value[index].titleZh = res;
     } else {
       data.value[index].translated = false;
     }
@@ -65,13 +65,13 @@ const moreReview = async (kids: any, parentBy: string, parentNo: string) => {
   <div v-for="(i, index) in [...data].filter(item => item.deleted != true)" class="mt-3 w-full">
     <div class="py-2 pr-2 rounded-md dark:bg-gray-800 bg-gray-200">
       <div class="px-2 pb-1">
-        <NuxtLink class="text-xs underline" :to="`/${lang}/user?id=${i.by}`">
+        <NuxtLink class="text-xs underline dark:hover:text-primary hover:text-primary" :to="`/${lang}/user?id=${i.by}`">
           {{ '@' + i.by + ' ' }}
         </NuxtLink>
         <span class="text-xs text-primary ">
           {{ $t('reply') }}
         </span>
-        <NuxtLink class="text-xs underline" :to="`/${lang}/user?id=${i.parentBy}`">
+        <NuxtLink class="text-xs underline dark:hover:text-primary hover:text-primary" :to="`/${lang}/user?id=${i.parentBy}`">
           {{ ' @' + i.parentBy }}
         </NuxtLink>
         <span class="ml-2 text-xs">
@@ -97,7 +97,7 @@ const moreReview = async (kids: any, parentBy: string, parentNo: string) => {
           </div>
           <div class="flex gap-1">
             <UIcon @click="() => dsTranslateTxt(i.text, index)" name="i-heroicons-language"
-                   class=" dark:bg-gray-400 bg-gray-500"/>
+                   class="mt-0.5  cursor-pointer dark:hover:text-primary hover:text-primary"/>
           </div>
         </div>
       </div>

@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import * as htmlToImage from 'html-to-image';
-const { locale } = useI18n()
+
+const {locale} = useI18n()
 const lang = locale.value;
+// 用于判断请求是否在进行中
+const isPending = ref(false);
 
 // 截图过滤掉带有特定class的元素
 const filter = (node: HTMLElement) => {
@@ -29,13 +32,13 @@ const shareImg = () => {
   if (process.client) {
     const node = document.getElementById('cut-img');
     if (node != null) {
-      htmlToImage.toJpeg(node, { quality: 0.95, filter: filter })
-        .then(function (dataUrl) {
-          var link = document.createElement('a');
-          link.download = Date.now() + '.jpeg';
-          link.href = dataUrl;
-          link.click();
-        });
+      htmlToImage.toJpeg(node, {quality: 0.95, filter: filter})
+          .then(function (dataUrl) {
+            var link = document.createElement('a');
+            link.download = Date.now() + '.jpeg';
+            link.href = dataUrl;
+            link.click();
+          });
     } else {
       console.log('node is null');
     }
@@ -47,7 +50,7 @@ const props = defineProps({
 });
 
 // 参数
-const { data } = toRefs(props);
+const {data} = toRefs(props);
 
 const isOpenReview = ref(false);
 const reviewData: Ref<any[]> = ref([]);
@@ -58,7 +61,7 @@ const openReview = async (kids: any, parentBy: string, parentNo: string) => {
   if (!isOpenReview.value) {
     const res = await $fetch("/api/hacker-news-review", {
       method: "POST",
-      body: { kids: kids, parentBy: parentBy, lang: locale.value, page: page.value, parentNo: parentNo }
+      body: {kids: kids, parentBy: parentBy, lang: locale.value, page: page.value, parentNo: parentNo}
     });
     isOpenReview.value = true;
     reviewData.value = reviewData.value.concat(res);
@@ -73,25 +76,44 @@ const openReview = async (kids: any, parentBy: string, parentNo: string) => {
 const moreReview = async (kids: any, parentBy: string, parentNo: string) => {
   const res = await $fetch("/api/hacker-news-review", {
     method: "POST",
-    body: { kids: kids, parentBy: parentBy, lang: locale.value, page: page.value, parentNo: parentNo }
+    body: {kids: kids, parentBy: parentBy, lang: locale.value, page: page.value, parentNo: parentNo}
   });
   isOpenReview.value = true;
   reviewData.value = reviewData.value.concat(res);
 }
-
+const toast = useToast();
 // deepseek model 翻译
 const dsTranslateTxt = async (txt: string, index: any) => {
   if (data?.value != undefined) {
     if (!data.value[index].translated) {
+      toast.add({
+        id: index,
+        title: "提示",
+        description: `疯狂请求ing`,
+        timeout: 10000,
+      });
       const params = {
         text: txt,
       };
-      const res: any = await $fetch("/api/deepseek-translate", {
-        method: "POST",
-        body: params
-      });
-      data.value[index].translated = !data.value[index].translated;
-      data.value[index].titleZh = res;
+      try {
+        const res = await $fetch("/api/deepseek-translate", {
+          method: "POST",
+          body: params,
+          onResponse({response}) {
+            console.log(response)
+          },
+          onResponseError({response}) {
+            console.error(response)
+          }
+        });
+        data.value[index].translated = !data.value[index].translated;
+        data.value[index].titleZh = res;
+      } catch (error) {
+        console.error("Fetch error:", error);
+      } finally {
+        toast.clear();
+        isPending.value = false; // 请求结束，无论成功或失败
+      }
     } else {
       data.value[index].translated = false;
     }
@@ -139,21 +161,24 @@ watch(data, () => {
       <div class="p-3 rounded-md dark:bg-black bg-gray-100 items-center">
         <div class="flex-1">
           <div class="m-2 3xs:block md:hidden ">
-            <NuxtLink class=" underline" :to="`/${lang}/user?id=${i.by}`">
+            <NuxtLink class="underline cursor-pointer" :to="`/${lang}/user?id=${i.by}`">
               {{ '@' + i.by }}
             </NuxtLink>
             <span class="pl-2 ">
               {{ i.time }}
             </span>
             <UButton class="h-6 inline-block float-right  remove-me" :class="{ 'shake-bottom': shakeFlag }"
-              color="primary" size="2xs" @click="openModel(i.id)">{{
+                     color="primary" size="2xs" @click="openModel(i.id)">{{
                 $t('share')
-              }}</UButton>
+              }}
+            </UButton>
           </div>
           <UButton class="h-6 3xs:hidden md:inline-block float-right remove-me " :class="{ 'shake-bottom': shakeFlag }"
-            color="primary" size="2xs" @click="openModel(i.id)">{{
+                   color="primary" size="2xs" @click="openModel(i.id)">{{
               $t('share')
-            }}</UButton>
+            }}
+          </UButton>
+          <!--          标题-->
           <h5 class="pl-2 dark:hover:text-primary hover:text-primary">
             <ULink :to="i.url" target="_blank" v-if="i.translated" class="text-left underline">
               <span class="text-primary text-lg">{{ (i.indexNo) }}</span>
@@ -166,23 +191,14 @@ watch(data, () => {
               <span v-if="i.url">{{ '(' + i.url.split('/')[2] + ')' }}</span>
             </ULink>
           </h5>
-          <h6 class="pl-2">{{ i.summary }}</h6>
+          <!--      <h6 class="pl-2">{{ i.summary }}</h6>-->
+          <!--          用户 评论 时间-->
           <div class="flex m-2 items-center">
             <div class="flex gap-2">
               <div class="gap-0.5 3xs:hidden md:flex dark:hover:text-primary hover:text-primary">
                 <NuxtLink class="underline" :to="`/${lang}/user?id=${i.by}`">
                   {{ '@' + i.by }}
                 </NuxtLink>
-              </div>
-
-              <div class="gap-0.5 3xs:hidden md:flex">
-                <span class="">
-                  {{ i.time }}
-                </span>
-              </div>
-
-              <div class="flex gap-0.5">
-                <ULink class="">{{ i.score + ' ' + $t('points') }}</ULink>
               </div>
 
               <div class="flex gap-0.5" v-if="i.kids != null" @click="() => openReview(i.kids, i.by, i.indexNo)">
@@ -196,21 +212,34 @@ watch(data, () => {
                   </span>
                 </ULink>
               </div>
-              <div class="flex remove-me">
-                <UIcon @click="() => dsTranslateTxt(i.title, index)" name="i-heroicons-language" class="mt-0.5" />
+              <div class="flex remove-me ">
+                <UIcon @click="() => dsTranslateTxt(i.title, index)" name="i-heroicons-language"
+                       class="mt-0.5  cursor-pointer dark:hover:text-primary hover:text-primary"/>
               </div>
-<!--              <div class="flex remove-me">-->
-<!--                <UIcon @click="() => dsSummaryUrl(i.url, index)" name="i-heroicons-square-3-stack-3d" class="mt-0.5" />-->
-<!--              </div>-->
+
+              <div class="flex gap-0.5">
+                <span>{{ i.score + ' ' + $t('points') }}</span>
+              </div>
+
+              <div class="gap-0.5 3xs:hidden md:flex">
+                <span class="">
+                  {{ i.time }}
+                </span>
+              </div>
+              <!--  <div class="flex remove-me">-->
+              <!--    <UIcon @click="() => dsSummaryUrl(i.url, index)" name="i-heroicons-square-3-stack-3d" class="mt-0.5"/>-->
+              <!--  </div>-->
             </div>
           </div>
+          <!--          评论-->
           <div class="w-full review">
-            <ListHnReview v-if="isOpenReview && i.id == reviewData['0'].parent" :data="reviewData" />
+            <ListHnReview v-if="isOpenReview && i.id == reviewData['0'].parent" :data="reviewData"/>
             <UButton color="primary"
-              v-if="i.kids != null && isOpenReview && i.id == reviewData['0'].parent && i.kids.length != reviewData.length"
-              @click="() => { page++, moreReview(i.kids, i.by, i.indexNo.split('#')[1]) }"
-              class="flex mt-2 h-6  remove-me" :class="{ 'shake-bottom': shakeFlag }" size="xs">
-              {{ $t('loadMore') }}</UButton>
+                     v-if="i.kids != null && isOpenReview && i.id == reviewData['0'].parent && i.kids.length != reviewData.length"
+                     @click="() => { page++, moreReview(i.kids, i.by, i.indexNo.split('#')[1]) }"
+                     class="flex mt-2 h-6  remove-me" :class="{ 'shake-bottom': shakeFlag }" size="xs">
+              {{ $t('loadMore') }}
+            </UButton>
           </div>
         </div>
       </div>
@@ -224,7 +253,7 @@ watch(data, () => {
               截图分享
             </h3>
             <UButton color="gray" variant="ghost" icon="i-heroicons-x-mark-20-solid" class="-my-1"
-              @click="isOpen = false" />
+                     @click="isOpen = false"/>
           </div>
         </template>
         <div class="rounded-lg shadow-sm border border-primary-400  p-2" id="cut-img">

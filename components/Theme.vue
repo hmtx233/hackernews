@@ -1,6 +1,6 @@
 <template>
     <UDropdown :ui="{ width: 'w-20' }" :items="color" :popper="{ placement: 'bottom-start' }">
-      <span class="ml-1 i-heroicons-swatch-20-solid flex-shrink-0 h-5 w-5 primary" aria-hidden="true"></span>
+       <UIcon name="i-heroicons-swatch-20-solid" class="ml-1 flex-shrink-0 h-5 w-5 primary" ></UIcon>
       <template #item="{ item }">
         <div @click="changeTheme(item.label)"
           :class="`w-full bg-${item.label}-400 text-${item.label}-400 dark:bg-${item.label}-400 dark:text-${item.label}-400 rounded-full cursor-pointer`">
