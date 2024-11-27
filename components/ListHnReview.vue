@@ -11,24 +11,46 @@ const props = defineProps({
 
 const {data} = toRefs(props);
 
+const toast = useToast();
+
 // deepseek model 翻译
 const dsTranslateTxt = async (txt: string, index: any) => {
   if (data?.value != undefined) {
     if (!data.value[index].translated) {
+      toast.add({
+        id: index,
+        title: "提示",
+        description: `疯狂请求ing`,
+        timeout: 10000,
+      });
       const params = {
         text: txt,
       };
-      const res: any = await $fetch("/api/deepseek-translate", {
-        method: "POST",
-        body: params
-      });
-      data.value[index].translated = !data.value[index].translated;
-      data.value[index].titleZh = res;
+      try {
+        const res = await $fetch("/api/deepseek-translate", {
+          method: "POST",
+          body: params,
+          onResponse({response}) {
+            console.log(response)
+          },
+          onResponseError({response}) {
+            console.error(response)
+          }
+        });
+        data.value[index].translated = !data.value[index].translated;
+        data.value[index].titleZh = res;
+      } catch (error) {
+        console.error("Fetch error:", error);
+      } finally {
+        toast.clear();
+        isPending.value = false; // 请求结束，无论成功或失败
+      }
     } else {
       data.value[index].translated = false;
     }
   }
 }
+
 
 
 const isOpenReview = ref(false);
